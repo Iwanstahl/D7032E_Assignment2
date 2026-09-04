@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PaymentTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CodeCoverageReport</a> &gt; <a href="index.source.html" class="el_package">ltu</a> &gt; <span class="el_source">PaymentTest.java</span></div><h1>PaymentTest.java</h1><pre class="source lang-java linenums">package ltu;
+
+import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.Before;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
+
+<span class="fc" id="L10">public class PaymentTest {</span>
+    private PaymentImpl getPayment(int year, int month, int day) throws IOException {
+<span class="fc" id="L12">        ICalendar fixedCalendar = new ICalendar() {</span>
+            @Override
+            public Date getDate() {
+<span class="fc" id="L15">                Calendar c = Calendar.getInstance();</span>
+<span class="fc" id="L16">                c.set(year, month - 1, day);</span>
+<span class="fc" id="L17">                return c.getTime();</span>
+            }
+        };
+<span class="fc" id="L20">        return new PaymentImpl(fixedCalendar);</span>
+    }
+
+    // --- ID 101: The student must be at least 20 years old to receive subsidiary and student loans ---
+    @Test
+    public void testAgeBelow20GetsNothing() throws IOException {
+<span class="fc" id="L26">        PaymentImpl payment = getPayment(2016, 1, 1);</span>
+<span class="fc" id="L27">        int result = payment.getMonthlyAmount(&quot;19970101-0000&quot;, 0, 100, 100);</span>
+<span class="fc" id="L28">        assertEquals(0, result);</span>
+<span class="fc" id="L29">    }</span>
+    @Test
+    public void testAge20GetsPayment() throws IOException {
+<span class="fc" id="L32">        PaymentImpl payment = getPayment(2016, 1, 1);</span>
+<span class="fc" id="L33">        int result = payment.getMonthlyAmount(&quot;19960101-0000&quot;, 0, 100, 100);</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">        assertTrue(result &gt; 0);</span>
+<span class="fc" id="L35">    }</span>
+
+    // --- ID 102:The student may receive subsidiary until the year they turn 56 ---
+    @Test
+    public void testAge57GetsNoSubsidy() throws IOException {
+<span class="fc" id="L40">        PaymentImpl payment = getPayment(2016, 1, 1);</span>
+<span class="fc" id="L41">        int result = payment.getMonthlyAmount(&quot;19590101-0000&quot;, 0, 100, 100);</span>
+<span class="fc" id="L42">        assertEquals(0, result);</span>
+<span class="fc" id="L43">    }</span>
+    @Test
+    public void testAge56GetsSubsidy() throws IOException {
+<span class="fc" id="L46">        PaymentImpl payment = getPayment(2016, 1, 1);</span>
+<span class="fc" id="L47">        int result = payment.getMonthlyAmount(&quot;19600101-0000&quot;, 0, 100, 100);</span>
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">        assertTrue(result &gt; 0);</span>
+<span class="fc" id="L49">    }</span>
+
+    // --- ID 103: The student may not receive any student loans from the year they turn 47 --- 
+    @Test
+    public void testAge47GetsNoLoan() throws IOException {
+<span class="fc" id="L54">        PaymentImpl payment = getPayment(2016, 1, 1);</span>
+<span class="fc" id="L55">        int result = payment.getMonthlyAmount(&quot;19690101-0000&quot;, 0, 100, 100);</span>
+<span class="fc" id="L56">        assertEquals(2816, result);</span>
+<span class="fc" id="L57">    }</span>
+    @Test
+    public void testAge46GetsLoan() throws IOException {
+<span class="fc" id="L60">        PaymentImpl payment = getPayment(2016, 1, 1);</span>
+<span class="fc" id="L61">        int result = payment.getMonthlyAmount(&quot;19700101-0000&quot;, 0, 100, 100);</span>
+<span class="fc" id="L62">        assertEquals(9904, result);</span>
+<span class="fc" id="L63">    }</span>
+
+    // --- ID 201: The student must be studying at least half time to receive any subsidiary. ---
+
+    // --- ID 202: A student studying less than full time is entitled to 50% subsidiary. ---
+
+    // --- ID 203: A student studying full time is entitled to 100% subsidiary. ---
+
+
+    // --- ID 301:A student who is studying full time or more is permitted to earn a maximum of 85 813SEK per year in order to receive any subsidiary or student loans. ---
+    @Test
+    public void testFullTimeIncomeOverLimitGetsNothing() throws IOException {
+<span class="fc" id="L75">        PaymentImpl payment = getPayment(2016, 1, 1);</span>
+<span class="fc" id="L76">        int result = payment.getMonthlyAmount(&quot;19960101-0000&quot;, 85814, 100, 100);</span>
+<span class="fc" id="L77">        assertEquals(0, result);</span>
+<span class="fc" id="L78">    }</span>
+    @Test
+    public void testFullTimeIncomeAtLimitGetsPayment() throws IOException {
+<span class="fc" id="L81">        PaymentImpl payment = getPayment(2016, 1, 1);</span>
+<span class="fc" id="L82">        int result = payment.getMonthlyAmount(&quot;19960101-0000&quot;, 85813, 100, 100);</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        assertTrue(result &gt; 0);</span>
+<span class="fc" id="L84">    }</span>
+
+    // --- ID 302: A student who is studying less than full time is allowed to earn a maximum of 128 722SEK per year in order to receive any subsidiary or student loans. ---
+        @Test
+    public void testPartTimeIncomeOverLimitGetsNothing() throws IOException {
+<span class="fc" id="L89">        PaymentImpl payment = getPayment(2016, 1, 1);</span>
+<span class="fc" id="L90">        int result = payment.getMonthlyAmount(&quot;19960101-0000&quot;, 128723, 99, 100);</span>
+<span class="fc" id="L91">        assertEquals(0, result);</span>
+<span class="fc" id="L92">    }</span>
+    @Test
+    public void testPartTimeIncomeAtLimitGetsPayment() throws IOException {
+<span class="fc" id="L95">        PaymentImpl payment = getPayment(2016, 1, 1);</span>
+<span class="fc" id="L96">        int result = payment.getMonthlyAmount(&quot;19960101-0000&quot;, 128722, 99, 100);</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">        assertTrue(result &gt; 0);</span>
+<span class="fc" id="L98">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>
