@@ -97,4 +97,23 @@ public class PaymentTest {
         assertTrue(result > 0);
     }
 
+    // --- ID 401: A student must have completed at least 50% of previous studies in order to receive any subsidiary or student loans. ---                 
+                                                                                                                                                         
+    
+    // --- ID 501: Full time student loan: 7088 SEK / month ---                                                                                            
+                                                                                                                                                         
+    // --- ID 502: Full time subsidiary: 2816 SEK / month ---
+
+    // --- ID 503: Less than full time student loan: 3564 SEK / month ---
+
+    // --- ID 504: Less than full time subsidiary: 1396 SEK / month ---
+
+    // --- ID 505: A person who is entitled to receive a student loan will always receive the full amount. ---
+
+    // --- ID 506: Student loans and subsidiary is paid on the last weekday (Monday to Friday) every month. ---
+
+
+
+
+
 }
