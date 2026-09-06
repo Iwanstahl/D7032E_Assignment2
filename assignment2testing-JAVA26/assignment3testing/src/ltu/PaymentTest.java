@@ -63,7 +63,6 @@ public class PaymentTest {
     }
 
     // --- ID 201: The student must be studying at least half time to receive any subsidiary. ---
-
     @Test
     public void testBelowHalfTimeGetsNothing() throws IOException {
         PaymentImpl payment = getPayment(2016, 1, 1);
@@ -77,9 +76,19 @@ public class PaymentTest {
         assertEquals(4960, result);
     }
     // --- ID 202: A student studying less than full time is entitled to 50% subsidiary. ---
-
+   @Test
+    public void testLessThanFullTimeGetsPartTimeSubsidiary() throws IOException {
+        PaymentImpl payment = getPayment(2016, 1, 1);
+        int result = payment.getMonthlyAmount("19960101-0000", 0, 99, 100);
+        assertEquals(4960, result);
+    }
     // --- ID 203: A student studying full time is entitled to 100% subsidiary. ---
-
+    @Test
+    public void testStudyingFullTime() throws IOException {
+        PaymentImpl payment = getPayment(2016, 1, 1);
+        int result = payment.getMonthlyAmount("19960101-0000", 0, 100, 100);
+        assertEquals(9904, result);
+    }
 
     // --- ID 301:A student who is studying full time or more is permitted to earn a maximum of 85 813SEK per year in order to receive any subsidiary or student loans. ---
     @Test
@@ -109,9 +118,20 @@ public class PaymentTest {
         assertTrue(result > 0);
     }
 
-    // --- ID 401: A student must have completed at least 50% of previous studies in order to receive any subsidiary or student loans. ---                 
-                                                                                                                                                         
-    
+    // --- ID 401: A student must have completed at least 50% of previous studies in order to receive any subsidiary or student loans. ---                                                                                                                                                                          
+    @Test
+    public void testHaveNotCompletedAtLeastHalfOfPreviousStudiesGetsNothing() throws IOException {
+        PaymentImpl payment = getPayment(2016, 1, 1);
+        int result = payment.getMonthlyAmount("19960101-0000", 0, 100, 49);
+        assertEquals(0, result);
+    }
+    @Test
+    public void testHaveCompletedAtLeastHalfOfPreviousStudiesGetsPayment() throws IOException {
+        PaymentImpl payment = getPayment(2016, 1, 1);
+        int result = payment.getMonthlyAmount("19960101-0000", 0, 100, 50);
+        assertEquals(9904, result);
+
+    }
     // --- ID 501: Full time student loan: 7088 SEK / month ---                                                                                            
                                                                                                                                                          
     // --- ID 502: Full time subsidiary: 2816 SEK / month ---
