@@ -64,6 +64,18 @@ public class PaymentTest {
 
     // --- ID 201: The student must be studying at least half time to receive any subsidiary. ---
 
+    @Test
+    public void testBelowHalfTimeGetsNothing() throws IOException {
+        PaymentImpl payment = getPayment(2016, 1, 1);
+        int result = payment.getMonthlyAmount("19960101-0000", 0, 49, 100);
+        assertEquals(0, result);
+    }
+    @Test
+    public void testHalfTimeGetsSubsidairy() throws IOException {
+        PaymentImpl payment = getPayment(2016, 1, 1);
+        int result = payment.getMonthlyAmount("19960101-0000", 0, 50, 100);
+        assertEquals(4960, result);
+    }
     // --- ID 202: A student studying less than full time is entitled to 50% subsidiary. ---
 
     // --- ID 203: A student studying full time is entitled to 100% subsidiary. ---
