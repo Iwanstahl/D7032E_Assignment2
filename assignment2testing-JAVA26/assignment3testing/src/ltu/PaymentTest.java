@@ -212,7 +212,31 @@ public class PaymentTest {
     assertEquals("20160630", payment.getNextPaymentDay()); // June 30 is Thursday
     }
 
-
-
+     // --- Input validation: rejects invalid arguments ---
+      @Test(expected = IllegalArgumentException.class)
+      public void testNullPersonIdThrows() throws IOException {
+          PaymentImpl payment = getPayment(2016, 1, 1);
+          payment.getMonthlyAmount(null, 0, 100, 100);
+      }
+      @Test(expected = IllegalArgumentException.class)
+      public void testNegativeIncomeThrows() throws IOException {
+          PaymentImpl payment = getPayment(2016, 1, 1);
+          payment.getMonthlyAmount("19960101-0000", -1, 100, 100);
+      }
+      @Test(expected = IllegalArgumentException.class)
+      public void testNegativeStudyRateThrows() throws IOException {
+          PaymentImpl payment = getPayment(2016, 1, 1);
+          payment.getMonthlyAmount("19960101-0000", 0, -1, 100);
+      }
+      @Test(expected = IllegalArgumentException.class)
+      public void testNegativeCompletionRatioThrows() throws IOException {
+          PaymentImpl payment = getPayment(2016, 1, 1);
+          payment.getMonthlyAmount("19960101-0000", 0, 100, -1);
+      }
+      @Test(expected = IllegalArgumentException.class)
+      public void testLongLengthPersonIdThrows() throws IOException {
+          PaymentImpl payment = getPayment(2016, 1, 1);
+          payment.getMonthlyAmount("1996010100", 0, 100, 100); // 10 chars, not 13
+      }
 
 }
