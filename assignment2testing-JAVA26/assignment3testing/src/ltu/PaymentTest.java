@@ -101,7 +101,7 @@ public class PaymentTest {
     public void testFullTimeIncomeAtLimitGetsPayment() throws IOException {
         PaymentImpl payment = getPayment(2016, 1, 1);
         int result = payment.getMonthlyAmount("19960101-0000", 85813, 100, 100);
-        assertTrue(result > 0);
+        assertEquals(9904, result);
     }
 
     // --- ID 302: A student who is studying less than full time is allowed to earn a maximum of 128 722SEK per year in order to receive any subsidiary or student loans. ---
@@ -115,7 +115,7 @@ public class PaymentTest {
     public void testPartTimeIncomeAtLimitGetsPayment() throws IOException {
         PaymentImpl payment = getPayment(2016, 1, 1);
         int result = payment.getMonthlyAmount("19960101-0000", 128722, 99, 100);
-        assertTrue(result > 0);
+        assertEquals(4960, result);
     }
 
     // --- ID 401: A student must have completed at least 50% of previous studies in order to receive any subsidiary or student loans. ---                                                                                                                                                                          
